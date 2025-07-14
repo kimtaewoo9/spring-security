@@ -31,10 +31,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final SecretKey secretKey;
 	private final JwtProperties jwtProperties;
 
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
+		// 유효성 검증 + SecurityContextHolder 에 인증 정보 설정 .
 		String bearerToken = request.getHeader("Authorization");
 		if (bearerToken == null) {
 			return;

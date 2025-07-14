@@ -134,4 +134,12 @@ public class JwtUtils {
 			.parseSignedClaims(token)
 			.getPayload();
 	}
+
+	public Long extractUserId(String token) {
+		return null;
+	}
+
+	public String extractEmail(String token) {
+		return null;
+	}
 }
