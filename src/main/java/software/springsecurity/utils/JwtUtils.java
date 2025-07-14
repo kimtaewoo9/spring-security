@@ -26,6 +26,8 @@ public class JwtUtils {
 	private final JwtProperties jwtProperties;
 
 	public String generateAccessToken(String username, Map<String, Object> additionalClaims) {
+		// header 를 따로 지정하지 않아도됨 .
+
 		Instant now = Instant.now();
 		Instant expiration = now.plusMillis(jwtProperties.accessTokenExpiration());
 
@@ -41,6 +43,7 @@ public class JwtUtils {
 			additionalClaims.forEach(builder::claim);
 		}
 
+		// header, payload, siginature 을 . 으로 합치는 작ㅇ버을 compact 라고 함 .
 		return builder.signWith(secretKey).compact();
 	}
 
@@ -66,6 +69,9 @@ public class JwtUtils {
 			// .
 		}
 
+		// compact 란 ? 1. 헤더와 페이로드를 각각 인코딩 하고 . 으로 연결
+		// 2. 이 문자열을 서명하고 서명 값도 인코딩
+		// 3. header, payload, signature 부분을 . 으로 연결함
 		return builder.signWith(secretKey).compact();
 	}
 

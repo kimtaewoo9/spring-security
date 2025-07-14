@@ -31,7 +31,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final SecretKey secretKey;
 	private final JwtProperties jwtProperties;
 
-
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
@@ -50,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			throw new JwtTokenMissingException("Bearer 토큰이 비어있습니다.");
 		}
 
-		//
+		// TODO 비대칭키 기반 JWT 생성 / 검증 으로 변경 ..
 		if (token != null) {
 			try {
 				// 유효성 검증 ..
