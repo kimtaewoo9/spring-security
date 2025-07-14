@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -41,7 +43,7 @@ public class SecurityConfig {
 				.requestMatchers("/api/public/**").permitAll()
 				.requestMatchers("/h2-console/**").permitAll()
 				// 관리자 전용 경로
-				.requestMatchers("/api/admin/**").hasRole("ADMIN")
+				.requestMatchers("/api/admin/**").hasRole("ADMIN") // admin 권한 있는 사람만 접근 가능.
 				// 매니저 이상 권한 경로
 				.requestMatchers("/api/manager/**").hasAnyRole("ADMIN", "MANAGER")
 				// 일반 사용자 이상 권한 경로
@@ -71,6 +73,14 @@ public class SecurityConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
+	}
+
+	// 해싱을 통한 암호화 .
+	// BCrypt 에서는 비밀번호를 해싱할때 .. salt 라는 임의의 추가 데이터를 함께 사용함 .
+	// 그래서 같은 비밀번호라도 . 해싱 결과가 매번 다르게 나온다 .
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 
 	@Bean

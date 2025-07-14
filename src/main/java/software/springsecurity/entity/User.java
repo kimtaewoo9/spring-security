@@ -10,16 +10,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
 
-@Table(name = "users")
 @Entity
+@Table(name = "users")
 @Getter
-@ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 public class User {
 
 	@Id
@@ -36,23 +35,25 @@ public class User {
 	private String email;
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private Role role = Role.USER;
 
-	private boolean enabled = true; // 계정 활성화 여부 .. 관리자가 사용자 계정을 비활성화 할때 사용 .
+	@Column(nullable = false)
+	private boolean enabled = true;
 
+	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 
+	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
 
-	public static User create(String username, String password, String email){
-		User user = new User();
-		user.username = username;
-		user.password = password;
-		user.email = email;
-		user.createdAt = LocalDateTime.now();
-		user.updatedAt = LocalDateTime.now();
-
-		return user;
+	// 생성자
+	public User(String username, String password, String email) {
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.createdAt = LocalDateTime.now();
+		this.updatedAt = LocalDateTime.now();
 	}
 
 	@PreUpdate

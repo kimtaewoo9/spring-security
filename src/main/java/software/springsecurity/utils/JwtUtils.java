@@ -79,7 +79,7 @@ public class JwtUtils {
 				.verifyWith(secretKey)
 				.requireIssuer(jwtProperties.issuer()) // 이 토큰이 변조되지 않았고, 내가 신뢰하는 사람이 만들었다는 증명 가능 .
 				.build()
-				.parseSignedClaims(token);
+				.parseSignedClaims(token); // 이때 비로소 .. jwt 토큰 문자열을 파서에 전달함 .
 			return true;
 		} catch (ExpiredJwtException e) {
 			log.debug("JWT 토큰이 만료되었습니다: {}", e.getMessage());
