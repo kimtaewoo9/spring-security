@@ -15,7 +15,7 @@ import software.springsecurity.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
 	// 1. spring security 가 UserDetailService 의 loadByUsername() 메서드를 호출 .
 	// 2. Custom User Detail Service 가 데이터베이스에서 사용자 정보 조회 .

@@ -13,6 +13,8 @@ import software.springsecurity.entity.User;
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
 
+	// refresh token 은 .. 주로 redis 에 저장함 !.
+
 	// token 으로 찾기 ..
 	Optional<RefreshToken> findByToken(String token);
 

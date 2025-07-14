@@ -115,4 +115,23 @@ public class JwtUtils {
 			return true;
 		}
 	}
+
+	public Date extractExpiration(String token) {
+		return extractAllClaims(token).getExpiration();
+	}
+
+	/**
+	 * 토큰에서 모든 클레임을 추출한다.
+	 *
+	 * @param token JWT 토큰
+	 * @return Claims 객체
+	 * @throws JwtException 토큰이 유효하지 않은 경우
+	 */
+	public Claims extractAllClaims(String token) {
+		return Jwts.parser()
+			.verifyWith(secretKey)
+			.build()
+			.parseSignedClaims(token)
+			.getPayload();
+	}
 }
