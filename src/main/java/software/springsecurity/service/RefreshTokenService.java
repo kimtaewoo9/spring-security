@@ -39,7 +39,7 @@ public class RefreshTokenService {
 
 	public Optional<RefreshToken> findByToken(String token) {
 		return refreshTokenRepository.findByToken(token)
-			.filter(RefreshToken::isValid);
+			.filter(RefreshToken::isValid); // 1. refresh token 이 있는지 2. 해당 refresh token 이 유효한지.
 	}
 
 	// refresh token 을 사용 처리함 .

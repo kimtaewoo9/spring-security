@@ -36,7 +36,7 @@ public class RefreshToken {
 
 	private LocalDateTime usedAt; // 새로운 access token 을 발급 받을 때 마다 .. 갱신함 .
 
-	private boolean revoked = false;
+	private boolean revoked = false; // 한번 사용 했으면 revoke 함 .. token rotation
 
 	public RefreshToken(String token, User user, LocalDateTime expiresAt) {
 		this.token = token;
@@ -50,6 +50,6 @@ public class RefreshToken {
 	}
 
 	public boolean isValid() {
-		return !revoked && !isExpired();
+		return !revoked && !isExpired(); // refresh token 이 취소 되거나 만료되지 않음 .
 	}
 }

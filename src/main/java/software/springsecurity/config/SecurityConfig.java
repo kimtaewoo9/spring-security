@@ -33,7 +33,7 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
-			.csrf(AbstractHttpConfigurer::disable)
+			.csrf(AbstractHttpConfigurer::disable) // 프론트랑 백엔드가 분리 되어 있으면 .. disable 해도 큰 문제가 없음 .
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.sessionManagement(session -> session.sessionCreationPolicy(
 				SessionCreationPolicy.STATELESS))
@@ -55,6 +55,8 @@ public class SecurityConfig {
 				.accessDeniedHandler(jwtAccessDeniedHandler))
 			.headers(headers -> headers
 				.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+			// 로그인 폼을 보여주기 전에 먼저 jwt 토큰을 검증함 . 만약 jwt 토큰이 있으면 이 필터는 그냥 넘어간다.
+			// Security Context Holder 가 존재하면 .. 추가 인증 x 바로 다음 필터로 .
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return httpSecurity.build();

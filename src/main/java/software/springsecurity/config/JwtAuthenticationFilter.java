@@ -67,6 +67,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					&& SecurityContextHolder.getContext().getAuthentication() == null) {
 					String role = claims.get("role").toString();
 
+					// username 과 password 를 통해 인증 객체를 만듦 .
+					// username -> UserDetails, authorities ..
+
 					// jwt 토큰에 있는 권한 정보를 추출해서 SimpleGrantedAuthority 를 만든다.
 					List<SimpleGrantedAuthority> authorities = Collections.singletonList(
 						new SimpleGrantedAuthority("ROLE_" + role));
@@ -78,7 +81,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					authentication.setDetails(
 						new WebAuthenticationDetailsSource().buildDetails(request)
 					);
-
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 				}
 			} catch (Exception ex) {

@@ -44,7 +44,7 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
 		try {
-			// Spring Security를 통한 인증
+			// 로그인이 하는 일 .. ID 비밀번호 검증하고, access token 과 refresh token 을 발급한다 .
 			Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
 					loginRequest.getUsername(),
@@ -68,6 +68,8 @@ public class AuthController {
 			RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
 			// 응답 생성
+			// TODO refresh token 을 HttpOnly cookie 에 담아서 전송 ..
+
 			Map<String, Object> response = Map.of(
 				"accessToken", accessToken,
 				"refreshToken", refreshToken.getToken(),
@@ -80,9 +82,7 @@ public class AuthController {
 					"role", user.getRole().name()
 				)
 			);
-
 			return ResponseEntity.ok(response);
-
 		} catch (BadCredentialsException e) {
 			return ResponseEntity.badRequest()
 				.body(Map.of("error", "잘못된 사용자명 또는 비밀번호입니다."));
@@ -119,10 +119,12 @@ public class AuthController {
 
 			String newAccessToken = jwtUtil.generateAccessToken(user.getUsername(), claims);
 
-			// 기존 Refresh Token 사용 처리
+			// 기존 Refresh Token 사용 처리 (왜 토큰을 삭제하지 않고 mark 만 하는가 ..)
+			// -> 왜 삭제 안하냐면 .. 이미 사용 됐음을 mark 해놓기 위해서임 .
+			// mark 를 남겨서 사용 이력을 추적 및 이상 행동을 감지함
 			refreshTokenService.markAsUsed(refreshToken);
 
-			// 새로운 Refresh Token 생성 (토큰 회전)
+			// 새로운 Refresh Token 생성 (토큰 회전) refresh token 은 한번 쓰고 재발급한다 .
 			RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
 
 			// 응답 생성
@@ -152,6 +154,7 @@ public class AuthController {
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout(@Valid @RequestBody TokenRefreshRequest request) {
 		try {
+			// 로그아웃하면 .. 그냥 refresh token 만 무효화하면 되나 ? access token 도 삭제해야하지 않나.
 			RefreshToken refreshToken = refreshTokenService.findByToken(request.getRefreshToken())
 				.orElseThrow(() -> new RuntimeException("유효하지 않은 refresh token입니다."));
 
