@@ -45,6 +45,10 @@ public class AuthController {
 	public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
 		try {
 			// 로그인이 하는 일 .. ID 비밀번호 검증하고, access token 과 refresh token 을 발급한다 .
+
+			// 인증 전용 토큰 객체를 authenticationManager 에게 전달함
+			// 인증 전용 토큰 객체 -> 사용자의 아이디와 비밀번호만 담고, 인증 절차를 위해 AuthenticationManager 에게 전달되는
+			// 	isAuthenticated() == false 상태으 Authentication 객체 .
 			Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
 					loginRequest.getUsername(),
@@ -52,7 +56,7 @@ public class AuthController {
 				)
 			);
 
-			// 인증 성공 시 사용자 정보 조회
+			// CustomUserPrincipal - > UserDetail 을 구현한 커스텀 클래스 .,
 			User user = ((CustomUserDetailsService.CustomUserPrincipal) authentication.getPrincipal()).getUser();
 
 			// Access Token 생성
@@ -61,15 +65,12 @@ public class AuthController {
 				"email", user.getEmail(),
 				"userId", user.getId()
 			);
-
 			String accessToken = jwtUtil.generateAccessToken(user.getUsername(), claims);
 
 			// Refresh Token 생성
 			RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
-			// 응답 생성
 			// TODO refresh token 을 HttpOnly cookie 에 담아서 전송 ..
-
 			Map<String, Object> response = Map.of(
 				"accessToken", accessToken,
 				"refreshToken", refreshToken.getToken(),
@@ -108,23 +109,16 @@ public class AuthController {
 			RefreshToken refreshToken = refreshTokenService.findByToken(request.getRefreshToken())
 				.orElseThrow(() -> new RuntimeException("유효하지 않거나 만료된 refresh token입니다."));
 
+			// refresh token 에서 .. user 를 꺼내서 해당 정보로 access token 을 만든다 .
 			User user = refreshToken.getUser();
-
-			// 새로운 Access Token 생성
 			Map<String, Object> claims = Map.of(
 				"role", user.getRole().name(),
 				"email", user.getEmail(),
 				"userId", user.getId()
 			);
-
 			String newAccessToken = jwtUtil.generateAccessToken(user.getUsername(), claims);
 
-			// 기존 Refresh Token 사용 처리 (왜 토큰을 삭제하지 않고 mark 만 하는가 ..)
-			// -> 왜 삭제 안하냐면 .. 이미 사용 됐음을 mark 해놓기 위해서임 .
-			// mark 를 남겨서 사용 이력을 추적 및 이상 행동을 감지함
 			refreshTokenService.markAsUsed(refreshToken);
-
-			// 새로운 Refresh Token 생성 (토큰 회전) refresh token 은 한번 쓰고 재발급한다 .
 			RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
 
 			// 응답 생성
