@@ -21,7 +21,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
-@EnableWebSecurity // 웹 보안 기능 활성화 하는 애노테이션 . 스프링 시큐리티의 필터체인이 자동으로 등록됨 .
+@EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true) // 메서드 단위 보안 기능 활성화 @PreAuthorize 같은거 ..
 @RequiredArgsConstructor
 public class SecurityConfig {
